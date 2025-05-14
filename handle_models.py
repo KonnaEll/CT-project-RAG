@@ -19,7 +19,7 @@ class SingleResult(TypedDict, total=False):
 
 def load_qa_models(
     rag_model_name: str = "PleIAs/Pleias-RAG-350M",
-    t5_model_name: str = "google/t5-base",
+    t5_model_name: str = "google-t5/t5-base",
     t5_task: str = "text2text-generation",
     device: int = 0,
     torch_dtype=torch.float16
