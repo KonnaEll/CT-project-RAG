@@ -41,3 +41,24 @@ def find_papers_on_topic(df, topic, max_results=5):
     )
     results = df[mask].sort_values('update_date', ascending=False).head(max_results)
     return results[['title', 'authors', 'categories', 'update_date']]
+
+# # Example: Analyze papers by year
+# # Extract year from update_date
+# arxiv_df['year'] = arxiv_df['update_date'].str[:4]
+# papers_by_year = arxiv_df['year'].value_counts().sort_index()
+
+# print("\nPapers published by year:")
+# print(papers_by_year)
+
+# # Example: Find papers from a specific author
+# def find_papers_by_author(df, author_name, max_results=5):
+#     """Find papers by a specific author."""
+#     mask = df['authors'].str.contains(author_name, case=False)
+#     results = df[mask].sort_values('update_date', ascending=False).head(max_results)
+#     return results[['title', 'authors', 'categories', 'update_date']]
+
+# # Example usage
+# author = "Yoshua Bengio"
+# author_papers = find_papers_by_author(arxiv_df, author)
+# print(f"\nPapers by {author}:")
+# print(author_papers)

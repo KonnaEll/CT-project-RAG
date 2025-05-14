@@ -40,7 +40,6 @@ def transform_papers_to_sources(papers: List[Dict]) -> List[Dict]:
         })
     return sources
 
-
 def save_sources(sources: List[Dict], output_path: str) -> None:
     """
     Save the sources list to a JSON lines file for easy streaming.
@@ -59,6 +58,19 @@ def save_demo_sources(sources: List[Dict], output_path: str) -> None:
         for source in sources[:demo_count]:
             f.write(json.dumps(source, ensure_ascii=False) + '\n')
     print(f"Saved {demo_count} demo sources to {output_path}")
+
+def load_sources_jsonl(input_path: str) -> List[Dict]:
+    """
+    Read a JSON lines file into a list of sources.
+
+    Returns:
+        List of dicts with 'abstract' and 'metadata'.
+    """
+    sources: List[Dict] = []
+    with open(input_path, 'r', encoding='utf-8') as f:
+        for line in f:
+            sources.append(json.loads(line))
+    return sources
 
 if __name__ == '__main__':
     # Path to the downloaded ArXiv metadata JSONL file
