@@ -21,7 +21,7 @@ def load_qa_models(
     rag_model_name: str = "PleIAs/Pleias-RAG-350M",
     t5_model_name: str = "google-t5/t5-base",
     t5_task: str = "text2text-generation",
-    device: int = 0,
+    device: int = 1,
     torch_dtype=torch.float16
 ) -> Tuple[Optional[RAGWithCitations], Optional[Pipeline]]:
     """
@@ -41,6 +41,7 @@ def load_qa_models(
     except Exception as e:
         logger.error(f"Failed to load RAG model '{rag_model_name}': {e}")
 
+    logger.info("-----------------------------------------------------------------")
     # Load T5 pipeline
     try:
         t5_ppl = pipeline(
@@ -118,18 +119,20 @@ def query_models(
 def model_check(rag,t5):
 
     # Quick check if both models loaded
-    if rag:
-        try:
-            print("RAG version:", rag.__version__)
-        except Exception as e:
-            logger.error(f"Error accessing RAG version: {e}")
-    else:
-        print("RAG model is not available.")
+    #if rag:
+    #    try:
+    #        print("RAG version:", rag.__version__) ## not in the doc.
+    #    except Exception as e:
+    #        logger.error(f"Error accessing RAG version: {e}")
+    #else:
+    #    print("RAG model is not available.")
 
     if t5:
         try:
             out = t5("translate English to French: The weather is nice today.")
-            print("T5 test:", out[0].get("generated_text", ""))
+            generated_text = out[0].get("generated_text", "")
+            if (generated_text == "Le temps est agréable aujourd'hui."):
+              print("T5 Loaded correctly")
         except Exception as e:
             logger.error(f"Error running T5 pipeline: {e}")
     else:

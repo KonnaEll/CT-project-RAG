@@ -53,7 +53,7 @@ def save_demo_sources(sources: List[Dict], output_path: str) -> None:
     """
     Save only the first 100 sources to a JSON lines file for quick exploration.
     """
-    demo_count = min(100, len(sources))
+    demo_count = min(20, len(sources))
     with open(output_path, 'w', encoding='utf-8') as f:
         for source in sources[:demo_count]:
             f.write(json.dumps(source, ensure_ascii=False) + '\n')
@@ -78,7 +78,7 @@ if __name__ == '__main__':
         '~/.cache/kagglehub/datasets/Cornell-University/arxiv/versions/232/arxiv-metadata-oai-snapshot.json'
     )
     output_path = 'arxiv_sources.jsonl'
-    output_path_demo = 'arxiv_demo_sources.jsonl'
+    output_path_demo = 'arxiv_demo_20_sources.jsonl'
 
     # Load, transform, and save
     print("Loading papers...")
