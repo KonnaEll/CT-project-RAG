@@ -6,26 +6,26 @@ A Retrieval-Augmented Generation (RAG) system built on ArXiv scientific papers, 
 
 ## 📂 Repository Structure
 
-- **download_arxiv/**  
+**download_arxiv/**  
   - Script to fetch the raw ArXiv metadata JSONL file (as provided by Konstantina).
 
-- **dataset_processing/**  
+**dataset_processing/**  
   - Transforms the raw JSONL into the `sources` format (`abstract` + `metadata`).  
   - Includes helper functions for filtering, sampling, and saving JSONL files (full and demo subsets).
 
-- **handle_models/**  
+**handle_models/**  
   - Functions to load and initialize both RAG (PleIAs-RAG-350M) and T5 models.  
   - Includes error handling, timing wrappers, and query functions.
 
-- **model_comparison/**  
-  - Jupyter notebook (or Python script) that runs interactive experiments.  
+**model_comparison/**  
+  - Jupyter notebook that runs interactive experiments.  
   - Allows you to input queries and gather model responses, with recorded latencies.  
   - Designed to run on GPU; Colab-friendly setup included.
 
-- **arxiv_sources.jsonl** (4.4 GB)  
+**arxiv_sources.jsonl** (4.4 GB)  
   - Full ArXiv `sources` dataset for production-scale RAG evaluation.
 
-- **arxiv_demo_sources.jsonl** (~<100 MB)  
+**arxiv_demo_sources.jsonl** (~<100 MB)  
   - Smaller subset for quick iteration and testing; committed to Git for convenience.
 
 ---
