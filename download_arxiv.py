@@ -31,16 +31,16 @@ arxiv_df = pd.DataFrame(arxiv_sample)
 # Display dataset information
 print(f"\nDataset columns: {arxiv_df.columns.tolist()}")
 
-# Example: Find recent papers on a specific topic
-def find_papers_on_topic(df, topic, max_results=5):
-    """Find papers related to a specific topic."""
-    # Search in titles and abstracts
-    mask = (
-        df['title'].str.contains(topic, case=False) |
-        df['abstract'].str.contains(topic, case=False)
-    )
-    results = df[mask].sort_values('update_date', ascending=False).head(max_results)
-    return results[['title', 'authors', 'categories', 'update_date']]
+# # Example: Find recent papers on a specific topic
+# def find_papers_on_topic(df, topic, max_results=5):
+#     """Find papers related to a specific topic."""
+#     # Search in titles and abstracts
+#     mask = (
+#         df['title'].str.contains(topic, case=False) |
+#         df['abstract'].str.contains(topic, case=False)
+#     )
+#     results = df[mask].sort_values('update_date', ascending=False).head(max_results)
+#     return results[['title', 'authors', 'categories', 'update_date']]
 
 # # Example: Analyze papers by year
 # # Extract year from update_date

@@ -77,7 +77,7 @@ if __name__ == '__main__':
     input_path = os.path.expanduser(
         '~/.cache/kagglehub/datasets/Cornell-University/arxiv/versions/232/arxiv-metadata-oai-snapshot.json'
     )
-    output_path = 'arxiv_sources.jsonl'
+    # output_path = 'arxiv_sources.jsonl'
     output_path_demo = 'arxiv_demo_20_sources.jsonl'
 
     # Load, transform, and save
@@ -88,5 +88,5 @@ if __name__ == '__main__':
     print("Transforming to sources format...")
     sources = transform_papers_to_sources(papers)
 
-    save_sources(sources, output_path)
+    # save_sources(sources, output_path)
     save_demo_sources(sources, output_path_demo)
