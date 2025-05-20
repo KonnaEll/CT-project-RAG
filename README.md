@@ -14,7 +14,7 @@ A Retrieval-Augmented Generation (RAG) system built on ArXiv scientific papers, 
   - Functions to load and initialize both RAG (PleIAs-RAG-350M) and T5 models.  
   - Includes error handling, timing wrappers, and query functions.
 
-**model_comparison/**  
+**model_comparison/**  (might need to download the file or clone it locally to see it)
   - Jupyter notebook that runs interactive experiments.  
   - Allows you to input queries and gather model responses, with recorded latencies.  
   - Designed to run on CPU and GPU; Colab-friendly setup included.
