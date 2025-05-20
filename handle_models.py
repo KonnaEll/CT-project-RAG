@@ -1,147 +1,106 @@
-import json
-import os
 import time
-import pickle
 import logging
-from typing import List, Dict, Optional, Tuple
+from typing import List, Dict, Optional, Tuple, Any
 import torch
-from transformers import pipeline, Pipeline
+from transformers import pipeline, Pipeline, AutoTokenizer
 from pleias_rag_interface import RAGWithCitations
-
-from typing import TypedDict, Any, Optional
 
 logger = logging.getLogger(__name__)
 
-class SingleResult(TypedDict, total=False):
-    response: Any
-    time: float
-    error: str
-
 def load_qa_models(
     rag_model_name: str = "PleIAs/Pleias-RAG-350M",
-    t5_model_name: str = "google-t5/t5-base",
+    t5_model_name: str = "google/flan-t5-large",
     t5_task: str = "text2text-generation",
     device: int = 1,
     torch_dtype=torch.float16
 ) -> Tuple[Optional[RAGWithCitations], Optional[Pipeline]]:
-    """
-    Load both a RAG-with-citations model and a T5 generation pipeline with error handling.
 
-    Returns:
-        rag   : an instance of RAGWithCitations ready for retrieval + generation, or None on failure
-        t5_ppl: a transformers pipeline for text2text-generation (T5), or None on failure
-    """
     rag = None
     t5_ppl = None
 
     # Load RAG model
     try:
         rag = RAGWithCitations(model_path_or_name=rag_model_name)
+        print("-------RAG Loaded correctly-------")
         logger.info(f"Successfully loaded RAG model '{rag_model_name}'")
     except Exception as e:
         logger.error(f"Failed to load RAG model '{rag_model_name}': {e}")
 
     logger.info("-----------------------------------------------------------------")
-    # Load T5 pipeline
+
+    # Load T5 pipeline (instruction-tuned + sampling)
     try:
+        tokenizer = AutoTokenizer.from_pretrained(t5_model_name)
+        if tokenizer.pad_token_id is None:
+            tokenizer.add_special_tokens({'pad_token': tokenizer.eos_token_id})
+
         t5_ppl = pipeline(
             task=t5_task,
             model=t5_model_name,
             torch_dtype=torch_dtype,
-            device=device
+            device=device,
+            # enable nucleus sampling
+            do_sample=False,
+            num_beams=4,
+            # ensure a pad token
+            pad_token_id=tokenizer.eos_token_id
         )
-        logger.info(f"Successfully initialized T5 pipeline with model '{t5_model_name}'")
+        print("--------T5 Loaded correctly---------")
+        logger.info(f"Loaded instruction-tuned T5 '{t5_model_name}' with sampling")
     except Exception as e:
-        logger.error(f"Failed to initialize T5 pipeline '{t5_model_name}': {e}")
+        logger.error(f"Failed to load T5 pipeline '{t5_model_name}': {e}")
+        t5_ppl = None
 
     return rag, t5_ppl
 
-def query_models(
+
+# Run only the RAG-with-citations model. Returns a dict with keys: 'response', 'time', and optionally 'error'.
+def query_rag(
     query: str,
     sources: List[Dict],
-    rag: RAGWithCitations,
-    t5_ppl: Pipeline
-) -> Dict[str, Dict]:
-    """
-    Query both RAG and T5 models, record responses and timings.
+    rag: RAGWithCitations
+    ) -> Dict[str, Any]:
 
-    Args:
-        query: the input query string
-        sources: list of source dicts for RAG
-        rag: initialized RAGWithCitations instance
-        t5_ppl: initialized transformers pipeline for T5
-
-    Returns:
-        A dict with keys 'rag' and 't5', each mapping to a dict:
-            {
-                'response': model-specific response object,
-                'time': elapsed seconds (float)
-            }
-    """
-    results = {}
-
-    # Query RAG
     try:
         start = time.time()
         rag_resp = rag.generate(query, sources)
         elapsed = time.time() - start
-        results['rag'] = {
-            'response': rag_resp,
-            'time': elapsed
+        return {
+          'response': rag_resp,
+          'time': elapsed
         }
     except Exception as e:
         logger.error(f"Error querying RAG model: {e}")
-        results['rag'] = {
+        return {
             'response': None,
             'time': None,
             'error': str(e)
         }
 
-    # Query T5
+# Pure LLM call—no retrieval context.Returns: 'response': <str generated_text or None>, 'time': <float seconds> , 'error': <str if error>
+SYSTEM_PROMPT = 'You are a helpful assistant'
+def query_t5(
+    query: str,
+    t5_ppl: Pipeline,
+    system_prompt: str = SYSTEM_PROMPT,
+    prefix: str = "Answer the following question:"
+) -> Dict[str, Any]:
+
     try:
+        # build a single prompt that starts with the “you are helpful assistant” line
+        prompt = (
+            f"{system_prompt}\n\n"
+            f"{prefix}\n"
+            f"Question: {query}\n"
+            "Answer:"
+        )
+
         start = time.time()
-        t5_out = t5_ppl(query)
+        out = t5_ppl(prompt, max_length=200)     # returns [ { "generated_text": ... } ]
         elapsed = time.time() - start
-        results['t5'] = {
-            'response': t5_out,
-            'time': elapsed
-        }
+
+        gen = out[0].get("generated_text", "").strip()
+        return {'response': gen, 'time': elapsed}
     except Exception as e:
-        logger.error(f"Error querying T5 pipeline: {e}")
-        results['t5'] = {
-            'response': None,
-            'time': None,
-            'error': str(e)
-        }
-
-    return results
-
-def model_check(rag,t5):
-
-    # Quick check if both models loaded
-    #if rag:
-    #    try:
-    #        print("RAG version:", rag.__version__) ## not in the doc.
-    #    except Exception as e:
-    #        logger.error(f"Error accessing RAG version: {e}")
-    #else:
-    #    print("RAG model is not available.")
-
-    if t5:
-        try:
-            out = t5("translate English to French: The weather is nice today.")
-            generated_text = out[0].get("generated_text", "")
-            if (generated_text == "Le temps est agréable aujourd'hui."):
-              print("T5 Loaded correctly")
-        except Exception as e:
-            logger.error(f"Error running T5 pipeline: {e}")
-    else:
-        print("T5 pipeline is not available.")
-
-
-if __name__ == "__main__":
-    # Configure logging
-    logging.basicConfig(level=logging.INFO)
-
-    rag, t5 = load_qa_models()
-    model_check(rag, t5)
+        logger.error(f"T5 generation error: {e}")
+        return {'response': None, 'time': None, 'error': str(e)}
