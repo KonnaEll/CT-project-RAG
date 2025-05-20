@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "query": "Does the dark matter field fluid model agree with geological and fossil evidence?",
+    "reference": "Yes. The model’s pattern agrees with geological and fossil evidence."
+  },
+  {
+    "id": 2,
+    "query": "What is the relation between partial cubes and hypercubes?",
+    "reference": "Partial cubes are isometric subgraphs of hypercubes."
+  },
+  {
+    "id": 3,
+    "query": "What is the capital of France?",
+    "reference": "Paris is the capital of France."
+  }
+]
+
+
+
