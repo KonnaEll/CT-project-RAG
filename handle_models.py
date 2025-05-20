@@ -53,7 +53,6 @@ def load_qa_models(
 
     return rag, t5_ppl
 
-
 # Run only the RAG-with-citations model. Returns a dict with keys: 'response', 'time', and optionally 'error'.
 def query_rag(
     query: str,
