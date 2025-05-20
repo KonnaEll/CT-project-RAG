@@ -6,12 +6,9 @@ A Retrieval-Augmented Generation (RAG) system built on ArXiv scientific papers, 
 
 ## 📂 Repository Structure
 
-**download_arxiv/**  
-  - Script to fetch the raw ArXiv metadata JSONL file (as provided by Konstantina).
-
 **dataset_processing/**  
   - Transforms the raw JSONL into the `sources` format (`abstract` + `metadata`).  
-  - Includes helper functions for filtering, sampling, and saving JSONL files (full and demo subsets).
+  - Includes helper functions for filtering, sampling, and saving JSONL files.
 
 **handle_models/**  
   - Functions to load and initialize both RAG (PleIAs-RAG-350M) and T5 models.  
@@ -20,23 +17,19 @@ A Retrieval-Augmented Generation (RAG) system built on ArXiv scientific papers, 
 **model_comparison/**  
   - Jupyter notebook that runs interactive experiments.  
   - Allows you to input queries and gather model responses, with recorded latencies.  
-  - Designed to run on GPU; Colab-friendly setup included.
+  - Designed to run on CPU and GPU; Colab-friendly setup included.
 
-**arxiv_sources.jsonl** (4.4 GB)  
-  - Full ArXiv `sources` dataset for production-scale RAG evaluation.
-
-**arxiv_demo_sources.jsonl** (~<100 MB)  
-  - Smaller subset for quick iteration and testing; committed to Git for convenience.
+**arxiv_21_sources.jsonl** (~<100 MB)  
+  - Smaller subset for quick iteration and testing; committed to Git for convenience. contains 20 sources from ArXiv and a manual source for the trivial question tested
 
 ---
-## 🔧 Next Steps
+## 🔧 Steps
 
 - **Experimentation**  
   Run a diverse set of science-related questions through both models. Record:  
   - Accuracy and relevance of answers  
-  - Response time (already captured)  
-  - Fluency and citation quality (RAG)  
-  - Any additional metrics (e.g. retrieval precision)
+  - Response time
+  - Fluency and completeness (RAG)  
 
 - **Evaluation**  
   Aggregate metrics, compare T5 vs. RAG, and document insights.
