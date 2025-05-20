@@ -42,3 +42,4 @@ def load_sources_jsonl(input_path: str) -> List[Dict]:
         for line in f:
             sources.append(json.loads(line))
     return sources
+    
